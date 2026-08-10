@@ -1,0 +1,25 @@
+# Eclipse
+/.metadata/
+*.class
+*.jar
+*.war
+
+# Maven
+target/
+*.iml
+
+# Spring Boot
+*.log
+application-local.yml
+
+# Docker
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
