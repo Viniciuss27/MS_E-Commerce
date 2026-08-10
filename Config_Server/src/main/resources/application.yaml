@@ -1,3 +1,19 @@
 spring:
   application:
-    name: Config_Server
+    name: config-server
+  
+  config:
+    import: optional:file:../.env[.properties]
+  
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/viniciuss27/MS_E-Commece_Config.git
+          username: ${GIT_USERNAME}
+          password: ${GIT_PASSWORD}
+          default-label: main
+          clone-on-start: true
+
+server:
+  port: 8888
