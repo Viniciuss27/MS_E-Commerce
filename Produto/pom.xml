@@ -141,8 +141,6 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <compilerArgs>--enable-preview
-                    </compilerArgs>
                 </configuration>
             </plugin>
 

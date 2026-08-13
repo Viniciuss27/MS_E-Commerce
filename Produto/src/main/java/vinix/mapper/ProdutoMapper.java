@@ -6,7 +6,6 @@ import org.mapstruct.MappingTarget;
 import vinix.dto.ProdutoRequestDTO;
 import vinix.dto.ProdutoResponseDTO;
 import vinix.entities.Produto;
-
 @Mapper(componentModel = "spring")
 public interface ProdutoMapper {
 
@@ -15,11 +14,12 @@ public interface ProdutoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ativo", ignore = true)
     @Mapping(target = "dataCriacao", ignore = true)
+    @Mapping(target = "version", ignore = true)
     Produto toEntity(ProdutoRequestDTO dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ativo", ignore = true)
     @Mapping(target = "dataCriacao", ignore = true)
+    @Mapping(target = "version", ignore = true)
     void updateEntityFromDTO(ProdutoRequestDTO dto, @MappingTarget Produto entity);
-    //atualiza o Produto já carregado do banco sem sobrescrever o id nem a dataCriacao
 }
