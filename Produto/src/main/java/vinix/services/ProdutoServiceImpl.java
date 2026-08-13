@@ -99,17 +99,17 @@ public class ProdutoServiceImpl implements ProdutoService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                     "Produto não encontrado com ID: " + item.produtoId()));
 
-            if (produto.getEstoque() < item.quantidade()) {
+            int linhasAfetadas = repository.abaterEstoque(item.produtoId(), item.quantidade());
+
+            if (linhasAfetadas == 0) {
                 log.error("Estoque insuficiente para o produto ID: {}. Solicitado: {}, Disponível: {}",
                     produto.getId(), item.quantidade(), produto.getEstoque());
                 throw new EstoqueInsuficienteException(
                     "Estoque insuficiente para o produto: " + produto.getNome());
             }
 
-            produto.setEstoque(produto.getEstoque() - item.quantidade());
-            repository.save(produto);
             log.info("Estoque reservado para o produto ID: {}. Quantidade abatida: {}",
-                produto.getId(), item.quantidade());
+                item.produtoId(), item.quantidade());
         }
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,4 +52,7 @@ public class Produto implements Serializable {
 
     @Column(name = "data_criacao", insertable = false, updatable = false)
     private OffsetDateTime dataCriacao;
+
+    @Version
+    private Long version;
 }
