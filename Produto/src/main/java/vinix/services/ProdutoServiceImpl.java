@@ -11,6 +11,7 @@ import vinix.entities.Produto;
 import vinix.mapper.ProdutoMapper;
 import vinix.repositories.ProdutoRepository;
 import vinix.services.exceptions.EstoqueInsuficienteException;
+import vinix.services.exceptions.ProdutoExistente;
 import vinix.services.exceptions.ResourceNotFoundException;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Transactional
     public ProdutoResponseDTO salvar(ProdutoRequestDTO dto) {
         if (repository.existsBySku(dto.sku())) {
-            throw new IllegalArgumentException(
+            throw new ProdutoExistente(
                 "Já existe produto com o SKU digitado -> " + dto.sku());
         }
 
@@ -101,12 +102,14 @@ public class ProdutoServiceImpl implements ProdutoService {
             if (produto.getEstoque() < item.quantidade()) {
                 log.error("Estoque insuficiente para o produto ID: {}. Solicitado: {}, Disponível: {}",
                     produto.getId(), item.quantidade(), produto.getEstoque());
-                throw new EstoqueInsuficienteException("Estoque insuficiente para o produto: " + produto.getNome());
+                throw new EstoqueInsuficienteException(
+                    "Estoque insuficiente para o produto: " + produto.getNome());
             }
 
             produto.setEstoque(produto.getEstoque() - item.quantidade());
             repository.save(produto);
-            log.info("Estoque reservado para o produto ID: {}. Quantidade abatida: {}", produto.getId(), item.quantidade());
+            log.info("Estoque reservado para o produto ID: {}. Quantidade abatida: {}",
+                produto.getId(), item.quantidade());
         }
     }
 }
