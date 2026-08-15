@@ -61,7 +61,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     entity = repository.save(entity);
     return mapper.toDto(entity);
   }
-  
+
   @Override
   @Transactional
   public void deletar(Long id) {
