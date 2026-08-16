@@ -72,6 +72,12 @@
             <version>${mapstruct.version}</version>
         </dependency>
 
+        <!--Circuit Breaker-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+        </dependency>
+
         <!--Feign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

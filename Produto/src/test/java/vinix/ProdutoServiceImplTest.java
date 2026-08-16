@@ -8,16 +8,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import vinix.dto.ItemPedidoDTO;
 import vinix.dto.ProdutoRequestDTO;
 import vinix.dto.ProdutoResponseDTO;
 import vinix.entities.Produto;
+import vinix.feigh.CategoriaFeighClient;
+import vinix.feigh.CategoriaFeighDTO;
 import vinix.mapper.ProdutoMapper;
 import vinix.repositories.ProdutoRepository;
 import vinix.services.ProdutoServiceImpl;
 import vinix.services.exceptions.EstoqueInsuficienteException;
 import vinix.services.exceptions.ProdutoExistente;
 import vinix.services.exceptions.ResourceNotFoundException;
+import vinix.services.exceptions.ServicoIndisponivelException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -42,6 +47,9 @@ class ProdutoServiceImplTest {
 
     @Mock
     private ProdutoMapper mapper;
+
+    @Mock
+    private CategoriaFeighClient feigh;
 
     @InjectMocks
     private ProdutoServiceImpl service;
@@ -121,6 +129,12 @@ class ProdutoServiceImplTest {
         void deveSalvarQuandoSkuNaoExistir() {
             // Arrange
             when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
+
+            // NOVO: precisa simular a categoria existindo, já que salvar() agora valida isso
+            CategoriaFeighDTO categoriaDTO = new CategoriaFeighDTO(1L, "Informática");
+            when(feigh.buscarPorId(1L))
+                .thenReturn(ResponseEntity.ok(categoriaDTO));
+
             when(mapper.toEntity(requestDTO)).thenReturn(produto);
             when(repository.save(produto)).thenReturn(produto);
             when(mapper.toDTO(produto)).thenReturn(responseDTO);
@@ -239,6 +253,70 @@ class ProdutoServiceImplTest {
             // Assert
             assertThat(produto.getAtivo()).isFalse();
             verify(repository).save(produto);
+        }
+    }
+
+    @Nested
+    @DisplayName("salvar - validação de categoria via Feign")
+    class SalvarComValidacaoCategoria {
+
+        @Test
+        @DisplayName("Deve salvar quando SKU não existe e categoria existe")
+        void deveSalvarQuandoCategoriaExiste() {
+            // Arrange
+            when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
+
+            // Simula o Feign respondendo 200 OK com a categoria encontrada
+            CategoriaFeighDTO categoriaDTO = new CategoriaFeighDTO(1L, "Informática");
+            when(feigh.buscarPorId(1L))
+                .thenReturn(ResponseEntity.ok(categoriaDTO));
+
+            when(mapper.toEntity(requestDTO)).thenReturn(produto);
+            when(repository.save(produto)).thenReturn(produto);
+            when(mapper.toDTO(produto)).thenReturn(responseDTO);
+
+            // Act
+            ProdutoResponseDTO resultado = service.salvar(requestDTO);
+
+            // Assert
+            assertThat(resultado).isNotNull();
+            verify(repository).save(produto);
+        }
+
+        @Test
+        @DisplayName("Deve lançar ResourceNotFoundException quando a categoria não existe")
+        void deveLancarExcecaoQuandoCategoriaNaoExiste() {
+            // Arrange
+            when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
+
+            // Simula o Feign respondendo 404 (categoria realmente não existe)
+            when(feigh.buscarPorId(1L))
+                .thenReturn(ResponseEntity.notFound().build());
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.salvar(requestDTO))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("1");
+
+            // Não deve tentar salvar produto com categoria inválida
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Deve lançar ServicoIndisponivelException quando ms-categoria está fora do ar")
+        void deveLancarExcecaoQuandoServicoCategoriaIndisponivel() {
+            // Arrange
+            when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
+
+            // Simula o fallback disparando (circuit breaker aberto)
+            when(feigh.buscarPorId(1L))
+                .thenReturn(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build());
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.salvar(requestDTO))
+                .isInstanceOf(ServicoIndisponivelException.class);
+
+            verify(repository, never()).save(any());
         }
     }
 }
