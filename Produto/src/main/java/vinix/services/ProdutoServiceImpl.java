@@ -2,17 +2,22 @@ package vinix.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vinix.dto.ItemPedidoDTO;
 import vinix.dto.ProdutoRequestDTO;
 import vinix.dto.ProdutoResponseDTO;
 import vinix.entities.Produto;
+import vinix.feigh.CategoriaFeighClient;
+import vinix.feigh.CategoriaFeighDTO;
 import vinix.mapper.ProdutoMapper;
 import vinix.repositories.ProdutoRepository;
 import vinix.services.exceptions.EstoqueInsuficienteException;
 import vinix.services.exceptions.ProdutoExistente;
 import vinix.services.exceptions.ResourceNotFoundException;
+import vinix.services.exceptions.ServicoIndisponivelException;
 
 import java.util.List;
 
@@ -23,6 +28,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     private final ProdutoRepository repository;
     private final ProdutoMapper mapper;
+    private final CategoriaFeighClient feigh;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,12 +66,28 @@ public class ProdutoServiceImpl implements ProdutoService {
                 "Já existe produto com o SKU digitado -> " + dto.sku());
         }
 
+        validarCategoriaExistente(dto.categoriaId());
+
         Produto produto = mapper.toEntity(dto);
         produto.setAtivo(true);
         Produto produtoSalvo = repository.save(produto);
 
         log.info("Produto cadastrado com sucesso. ID: {}, SKU: {}", produtoSalvo.getId(), produtoSalvo.getSku());
         return mapper.toDTO(produtoSalvo);
+    }
+
+    private void validarCategoriaExistente(Long categoriaId) {
+        ResponseEntity<CategoriaFeighDTO> response = feigh.buscarPorId(categoriaId);
+
+        if (response.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+            throw new ServicoIndisponivelException(
+                "Serviço de categorias está indisponível no momento Tente novamente mais tarde!");
+        }
+
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new ResourceNotFoundException(
+                "Categoria não encontrada com o ID: " + categoriaId);
+        }
     }
 
     @Override

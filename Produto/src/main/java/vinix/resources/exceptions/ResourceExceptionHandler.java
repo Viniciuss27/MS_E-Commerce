@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import vinix.services.exceptions.EstoqueInsuficienteException;
 import vinix.services.exceptions.ProdutoExistente;
 import vinix.services.exceptions.ResourceNotFoundException;
+import vinix.services.exceptions.ServicoIndisponivelException;
 
 import java.time.Instant;
 
@@ -65,6 +66,23 @@ public class ResourceExceptionHandler {
                 "Requisição Inválida",
                 e.getMessage(),
                 request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ServicoIndisponivelException.class)
+    public ResponseEntity<StandardError> servicoIndisponivel(
+        ServicoIndisponivelException e,
+        HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE; // 503
+
+        StandardError err = new StandardError(
+            Instant.now(),
+            status.value(),
+            "Serviço Indisponível",
+            e.getMessage(),
+            request.getRequestURI()
         );
         return ResponseEntity.status(status).body(err);
     }
