@@ -18,5 +18,5 @@ public interface ClienteMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "cpf", ignore = true)  // -> manter o cpf durante o update
-  void updateEntityFromDTO(ClienteUpdateDTO dto, @MappingTarget Cliente entity);
+  ClienteUpdateDTO updateEntityFromDTO(ClienteUpdateDTO dto, @MappingTarget Cliente entity);
 }
