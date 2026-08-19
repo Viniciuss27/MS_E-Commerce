@@ -10,8 +10,8 @@ import vinix.dto.ItemPedidoDTO;
 import vinix.dto.ProdutoRequestDTO;
 import vinix.dto.ProdutoResponseDTO;
 import vinix.entities.Produto;
-import vinix.feigh.CategoriaFeighClient;
-import vinix.feigh.CategoriaFeighDTO;
+import vinix.feign.CategoriaFeignClient;
+import vinix.feign.CategoriaFeignDTO;
 import vinix.mapper.ProdutoMapper;
 import vinix.repositories.ProdutoRepository;
 import vinix.services.exceptions.EstoqueInsuficienteException;
@@ -28,7 +28,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     private final ProdutoRepository repository;
     private final ProdutoMapper mapper;
-    private final CategoriaFeighClient feigh;
+    private final CategoriaFeignClient feign;
 
     @Override
     @Transactional(readOnly = true)
@@ -77,7 +77,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     private void validarCategoriaExistente(Long categoriaId) {
-        ResponseEntity<CategoriaFeighDTO> response = feigh.buscarPorId(categoriaId);
+        ResponseEntity<CategoriaFeignDTO> response = feign.buscarPorId(categoriaId);
 
         if (response.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
             throw new ServicoIndisponivelException(

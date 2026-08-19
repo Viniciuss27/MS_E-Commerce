@@ -1,4 +1,4 @@
-package vinix.feigh;
+package vinix.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(
     name = "categoria",
     path = "/categorias",
-    fallback = CategoriaFeighClientFallbackFactory.class)
-public interface CategoriaFeighClient {
+    fallback = CategoriaFeignClientFallbackFactory.class)
+public interface CategoriaFeignClient {
 
   @GetMapping("/{id}")
-  ResponseEntity<CategoriaFeighDTO> buscarPorId(@PathVariable Long id);
+  ResponseEntity<CategoriaFeignDTO> buscarPorId(@PathVariable Long id);
 }

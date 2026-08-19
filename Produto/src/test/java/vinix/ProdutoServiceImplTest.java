@@ -14,8 +14,8 @@ import vinix.dto.ItemPedidoDTO;
 import vinix.dto.ProdutoRequestDTO;
 import vinix.dto.ProdutoResponseDTO;
 import vinix.entities.Produto;
-import vinix.feigh.CategoriaFeighClient;
-import vinix.feigh.CategoriaFeighDTO;
+import vinix.feign.CategoriaFeignClient;
+import vinix.feign.CategoriaFeignDTO;
 import vinix.mapper.ProdutoMapper;
 import vinix.repositories.ProdutoRepository;
 import vinix.services.ProdutoServiceImpl;
@@ -49,7 +49,7 @@ class ProdutoServiceImplTest {
     private ProdutoMapper mapper;
 
     @Mock
-    private CategoriaFeighClient feigh;
+    private CategoriaFeignClient feigh;
 
     @InjectMocks
     private ProdutoServiceImpl service;
@@ -131,7 +131,7 @@ class ProdutoServiceImplTest {
             when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
 
             // NOVO: precisa simular a categoria existindo, já que salvar() agora valida isso
-            CategoriaFeighDTO categoriaDTO = new CategoriaFeighDTO(1L, "Informática");
+            CategoriaFeignDTO categoriaDTO = new CategoriaFeignDTO(1L, "Informática");
             when(feigh.buscarPorId(1L))
                 .thenReturn(ResponseEntity.ok(categoriaDTO));
 
@@ -267,7 +267,7 @@ class ProdutoServiceImplTest {
             when(repository.existsBySku("SKU-NB-001")).thenReturn(false);
 
             // Simula o Feign respondendo 200 OK com a categoria encontrada
-            CategoriaFeighDTO categoriaDTO = new CategoriaFeighDTO(1L, "Informática");
+            CategoriaFeignDTO categoriaDTO = new CategoriaFeignDTO(1L, "Informática");
             when(feigh.buscarPorId(1L))
                 .thenReturn(ResponseEntity.ok(categoriaDTO));
 
