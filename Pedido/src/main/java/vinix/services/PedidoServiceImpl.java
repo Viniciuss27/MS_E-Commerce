@@ -114,12 +114,13 @@ public class PedidoServiceImpl implements PedidoService {
   @Override
   @Transactional
   //@PreAuthorize("hasRole('ADMIN')")
-  public void atualizarStatus(Long id, StatusPedido novoStatus) {
+  public ResponseEntity<Void> atualizarStatus(Long id, StatusPedido novoStatus) {
     Pedido pedido = pedidoRepository.findById(id).orElseThrow(
         () -> new ResourceNotFoundException("Pedido não encontrado com Id: " + id));
 
     pedido.setStatus(novoStatus);
     pedidoRepository.save(pedido);
+    return null;
   }
 
   @Override

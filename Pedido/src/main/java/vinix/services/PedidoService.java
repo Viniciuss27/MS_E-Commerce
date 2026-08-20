@@ -1,5 +1,6 @@
 package vinix.services;
 
+import org.springframework.http.ResponseEntity;
 import vinix.dto.PedidoRequestDTO;
 import vinix.dto.PedidoResponseDTO;
 import vinix.entities.StatusPedido;
@@ -16,7 +17,7 @@ public interface PedidoService {
 
   PedidoResponseDTO criarPedido(PedidoRequestDTO dto);
 
-  void atualizarStatus(Long id, StatusPedido novoStatus);
+  ResponseEntity<Void> atualizarStatus(Long id, StatusPedido novoStatus);
 
   void cancelarPedido(Long id);
 }
