@@ -6,5 +6,5 @@ import vinix.entities.Pedido;
 import java.util.List;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-  List<Pedido> findByClientId(Long clientId);
+  List<Pedido> findByClienteId(Long clientId);
 }
