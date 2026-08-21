@@ -1,4 +1,4 @@
-package vinix.resource;
+package vinix.resources;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -13,5 +13,6 @@ public interface ItemPedidoMapper {
 
   @Mapping(target = "id",  ignore = true)
   @Mapping(target = "precoUnitario",   ignore = true)
+  @Mapping(target = "pedido", ignore = true)
   ItemPedido toEntity(ItemPedidoRequestDTO dto);
 }

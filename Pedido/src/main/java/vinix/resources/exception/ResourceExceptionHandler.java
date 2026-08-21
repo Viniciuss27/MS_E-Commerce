@@ -1,4 +1,4 @@
-package vinix.resource.exception;
+package vinix.resources.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import vinix.resources.exception.ValidationError;
 import vinix.services.exceptions.ExistenteException;
 import vinix.services.exceptions.ResourceNotFoundException;
 import vinix.services.exceptions.ServiceIndisponivelException;
