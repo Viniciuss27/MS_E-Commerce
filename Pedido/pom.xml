@@ -118,24 +118,6 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-        <dependency>
-            <groupId>vinix.com</groupId>
-            <artifactId>Produto</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>vinix.com</groupId>
-            <artifactId>Categoria</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>vinix.com</groupId>
-            <artifactId>Cliente</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
 

@@ -1,4 +1,4 @@
-package vinix.resources.exception;
+package vinix.resources.exceptions;
 
 import lombok.Builder;
 import lombok.Getter;

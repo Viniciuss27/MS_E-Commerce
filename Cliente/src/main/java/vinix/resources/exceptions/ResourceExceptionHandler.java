@@ -1,4 +1,4 @@
-package vinix.resources.exception;
+package vinix.resources.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import vinix.services.exceptions.ExistenteException;
 import vinix.services.exceptions.ResourceNotFoundException;
-import vinix.services.exceptions.ServiceIndisponivelException;
 
 import java.time.Instant;
 
@@ -49,22 +48,6 @@ public class ResourceExceptionHandler {
 
         return ResponseEntity.status(status).body(err);
         }
-
-    @ExceptionHandler(ServiceIndisponivelException.class)
-    public ResponseEntity<StandardError> servicoIndisponivel(
-        ServiceIndisponivelException e, HttpServletRequest request) {
-
-        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE; //503
-
-        StandardError err = StandardError.builder()
-            .timestamp(Instant.now())
-            .status(status.value())
-            .message(e.getMessage())
-            .error("Serviço Indisponível")
-            .path(request.getRequestURI()).build();
-
-        return ResponseEntity.status(status).body(err);
-    }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)

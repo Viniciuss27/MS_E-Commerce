@@ -4,14 +4,14 @@ spring:
   
   config:
     import:
-      - optional:file:../.env[.properties]
+      - optional:file:.env[.properties]
       - optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
   
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:db_categoria}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD}
   
   flyway:
     enabled: true
