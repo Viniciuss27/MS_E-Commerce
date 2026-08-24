@@ -1,0 +1,73 @@
+package vinix.services;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vinix.config.JwtService;
+import vinix.dto.request.LoginRequestDTO;
+import vinix.dto.request.RegisterRequestDTO;
+import vinix.dto.response.LoginResponseDTO;
+import vinix.dto.response.UserResponseDTO;
+import vinix.entities.Role;
+import vinix.entities.User;
+import vinix.mapper.UserMapper;
+import vinix.repositories.RoleRepository;
+import vinix.repositories.UserRepository;
+import vinix.services.exceptions.DuplicateEmailException;
+import vinix.services.exceptions.ResourceNotFoundException;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+		private final AuthenticationManager autenticador;
+		private final UserRepository userRepository;
+		private final RoleRepository roleRepository;
+		private final PasswordEncoder password;
+		private final UserMapper mapper;
+		private final JwtService jwtService;
+
+		@Override
+		public LoginResponseDTO login(LoginRequestDTO dto) {
+			autenticador.authenticate(
+					new UsernamePasswordAuthenticationToken(dto.email(),
+							dto.password()));
+
+			User user = userRepository.findByEmail(dto.email())
+					.orElseThrow(() -> new ResourceNotFoundException(
+							"Usuário não encontrado"));
+
+			List<String> roles = user.getRoles().stream()
+					.map(Role::getRoleName).toList();
+
+			String token = jwtService.gerateToken(dto.email(), roles);
+			return new LoginResponseDTO(token, "Bearer",
+					jwtService.getExpiration());
+		}
+
+		@Override
+		@Transactional
+		public UserResponseDTO register(RegisterRequestDTO dto) {
+		    if (userRepository.findByEmail(dto.email()).isPresent()) {
+		        throw new DuplicateEmailException(
+		          "Já existe uma conta cadastrada com o email " + dto.email());
+		    }
+
+						Role role = roleRepository.findByRoleName("CLIENT")
+								.orElseThrow(() -> new ResourceNotFoundException(
+										"Role padrão não encontrada: ROLE_CLIENT"));
+
+					    User user = mapper.toEntity(dto);
+					    user.setPassword(password.encode(dto.password()));
+					    user.getRoles().add(role);
+
+					    return mapper.toResponseDTO(userRepository.save(user));
+		}
+
+}
