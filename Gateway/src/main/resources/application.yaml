@@ -1,3 +1,72 @@
 spring:
   application:
-    name: Gateway
+    name: gateway
+  
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
+  
+  cloud:
+    loadbalancer:
+      configurations: health-check
+      
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      
+      routes:
+        - id: categoria
+          uri: lb://categoria
+          predicates:
+            - Path=/categorias/**
+          filters:
+            - StripPrefix=0
+          
+        - id: cliente
+          uri: lb://cliente
+          predicates:
+            - Path=/clientes/**
+          filters:
+            - StripPrefix=0
+          
+        - id: pedido
+          uri: lb://pedido
+          predicates:
+            - Path=/pedidos/**
+          filters:
+            - StripPrefix=0
+          
+        - id: produto
+          uri: lb://produto
+          predicates:
+            - Path=/produtos/**
+          filters:
+            - StripPrefix=0
+          
+        - id: notificacao
+          uri: lb://notificacao
+          predicates:
+            - Path=/notificacoes/**
+          filters:
+            - StripPrefix=0
+
+server:
+  port: 8765
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
