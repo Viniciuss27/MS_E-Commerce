@@ -1,11 +1,9 @@
 package vinix.config;
 
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -15,7 +13,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -24,16 +22,9 @@ public class SecurityConfig {
   private static final String[] ENDPOINTS_PUBLICOS = {
       "/categorias/**", "/notificacoes/**",
       "/pedidos/**", "/clientes/**",
-      "/produtos/**"
+      "/produtos/**", "/swagger-ui/**",
+      "/swagger-ui.html", "/v3/api-docs/**"
   };
-
-  @Value("${jwt.secret}")
-  private String jwtSecreta;
-
-  @Bean
-  SecretKey secretKey() {
-    return Keys.hmacShaKeyFor(jwtSecreta.getBytes(StandardCharsets.UTF_8));
-  }
 
   @Bean
   SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {

@@ -8,9 +8,6 @@ spring:
       - optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
   
   cloud:
-    loadbalancer:
-      configurations: health-check
-      
     gateway:
       discovery:
         locator:

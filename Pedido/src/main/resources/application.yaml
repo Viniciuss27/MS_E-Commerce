@@ -48,6 +48,12 @@ spring:
 
 server:
   port: ${PORT:0}
+  
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 eureka:
   client:

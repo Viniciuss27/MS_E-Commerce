@@ -22,8 +22,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.springframework.aot.hint.TypeReference.listOf;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAutenticacao implements WebFilter{
