@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 			List<String> roles = user.getRoles().stream()
 					.map(Role::getRoleName).toList();
 
-			String token = jwtService.gerateToken(dto.email(), roles);
+			String token = jwtService.generateToken(dto.email(), roles);
 			return new LoginResponseDTO(token, "Bearer",
 					jwtService.getExpiration());
 		}

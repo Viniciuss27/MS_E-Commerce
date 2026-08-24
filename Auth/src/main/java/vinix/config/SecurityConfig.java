@@ -26,7 +26,6 @@ public class SecurityConfig {
 				private static final String[] ENDPOINTS_PUBLICOS = {
 						      "/auth/login",
 				        "/auth/register",
-				        "/h2-console/**",
 				        "/v3/api-docs/**",
 				        "/swagger-ui/**",
 				        "/docs"

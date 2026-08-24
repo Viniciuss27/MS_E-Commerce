@@ -23,7 +23,7 @@ public class JwtService {
 		@Value("${jwt.expiration}")
 		private Long expiration;
 
-	public String gerateToken(String email, List<String> roles) {
+	public String generateToken(String email, List<String> roles) {
 		SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 		Instant now = Instant.now();
 
