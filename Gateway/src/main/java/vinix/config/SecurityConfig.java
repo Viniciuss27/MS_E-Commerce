@@ -19,11 +19,12 @@ public class SecurityConfig {
 
   private final JwtAutenticacao jwtAutenticacao;
 
+
   private static final String[] ENDPOINTS_PUBLICOS = {
-      "/categorias/**", "/notificacoes/**",
-      "/pedidos/**", "/clientes/**",
-      "/produtos/**", "/swagger-ui/**",
-      "/swagger-ui.html", "/v3/api-docs/**"
+      "/auth/login",
+      "/auth/register",
+      "/v3/api-docs/**",
+      "/swagger-ui/**"
   };
 
   @Bean

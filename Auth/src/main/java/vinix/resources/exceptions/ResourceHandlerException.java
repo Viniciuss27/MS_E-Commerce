@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -48,6 +49,21 @@ public class ResourceHandlerException {
     return ResponseEntity.status(status).body(err);
   }
 
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<StandardError> usernameNotFound(
+      UsernameNotFoundException e,
+      HttpServletRequest request) {
+
+    HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+    StandardError err = StandardError.builder()
+        .timestamp(Instant.now()).status(status.value())
+        .error("Unauthorized").message("Usuário ou senha inválidos")
+        .path(request.getRequestURI()).build();
+
+    return ResponseEntity.status(status).body(err);
+  }
+
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<StandardError> badCredentials(
       BadCredentialsException e,
@@ -72,7 +88,7 @@ public class ResourceHandlerException {
 
       StandardError err = StandardError.builder()
           .timestamp(Instant.now()).status(status.value())
-          .message("Email já cadastrado").error(e.getMessage())
+          .message(e.getMessage()).error("Email já cadastrado")
           .path(request.getRequestURI()).build();
 
       return ResponseEntity.status(status).body(err);
