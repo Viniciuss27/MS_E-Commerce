@@ -14,34 +14,41 @@ spring:
           enabled: false
       
       routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+        
         - id: categoria
           uri: lb://categoria
           predicates:
             - Path=/categorias/**
           filters:
             - StripPrefix=0
-          
+        
         - id: cliente
           uri: lb://cliente
           predicates:
             - Path=/clientes/**
           filters:
             - StripPrefix=0
-          
+        
         - id: pedido
           uri: lb://pedido
           predicates:
             - Path=/pedidos/**
           filters:
             - StripPrefix=0
-          
+        
         - id: produto
           uri: lb://produto
           predicates:
             - Path=/produtos/**
           filters:
             - StripPrefix=0
-          
+        
         - id: notificacao
           uri: lb://notificacao
           predicates:

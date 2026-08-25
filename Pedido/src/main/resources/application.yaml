@@ -49,6 +49,9 @@ spring:
 server:
   port: ${PORT:0}
   
+jwt:
+  secret: ${JWT_SECRET}
+  
 springdoc:
   api-docs:
     path: /v3/api-docs
