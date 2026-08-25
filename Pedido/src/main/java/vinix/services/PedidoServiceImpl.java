@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vinix.dto.ItemPedidoRequestDTO;
@@ -113,7 +114,7 @@ public class PedidoServiceImpl implements PedidoService {
 
   @Override
   @Transactional
-  //@PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> atualizarStatus(Long id, StatusPedido novoStatus) {
     Pedido pedido = pedidoRepository.findById(id).orElseThrow(
         () -> new ResourceNotFoundException("Pedido não encontrado com Id: " + id));

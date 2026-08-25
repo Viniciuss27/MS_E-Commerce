@@ -1,40 +1,68 @@
 package vinix.config;
 
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-
 @Configuration
 @EnableWebFluxSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtAutenticacao jwtAutenticacao;
-
+  @Value("${jwt.secret}")
+  private String secret;
 
   private static final String[] ENDPOINTS_PUBLICOS = {
       "/auth/login",
       "/auth/register",
       "/v3/api-docs/**",
-      "/swagger-ui/**"
+      "/swagger-ui/**",
+      "/webjars/**"
   };
 
   @Bean
-  SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-    return http.csrf(csfr -> csfr.disable())
-        .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+  ReactiveJwtDecoder reactiveJwtDecoder() {
+    SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    return NimbusReactiveJwtDecoder.withSecretKey(key).build();
+  }
+
+  @Bean
+  ReactiveJwtAuthenticationConverterAdapter jwtAuthenticationConverter() {
+    JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    authoritiesConverter.setAuthoritiesClaimName("roles");
+    authoritiesConverter.setAuthorityPrefix("ROLE_");
+
+    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+    converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+    return new ReactiveJwtAuthenticationConverterAdapter(converter);
+  }
+
+  @Bean
+  SecurityWebFilterChain securityWebFilterChain(
+      ServerHttpSecurity http, ReactiveJwtAuthenticationConverterAdapter converter) {
+
+    return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+        .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
         .authorizeExchange(exchange -> exchange
             .pathMatchers(ENDPOINTS_PUBLICOS).permitAll()
             .anyExchange().authenticated())
-        .addFilterAt(jwtAutenticacao, SecurityWebFiltersOrder.AUTHENTICATION)
+        .oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(jwt -> jwt.jwtAuthenticationConverter(converter)))
         .build();
   }
 }

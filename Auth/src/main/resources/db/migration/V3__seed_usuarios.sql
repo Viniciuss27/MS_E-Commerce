@@ -1,6 +1,6 @@
 INSERT INTO tb_user (name, email, password) VALUES
-('Admin Teste', 'admin@shopmicro.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4H9mzMv/xzz9pKR7ZI7QAeqzVjRq'),
-('Cliente Teste', 'cliente@shopmicro.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4H9mzMv/xzz9pKR7ZI7QAeqzVjRq');
+('Admin Teste', 'admin@gmail.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4H9mzMv/xzz9pKR7ZI7QAeqzVjRq'),
+('Cliente Teste', 'cliente@gmail.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4H9mzMv/xzz9pKR7ZI7QAeqzVjRq');
 
 -- Vincula o Admin Teste à role ADMIN, e Cliente Teste à role CLIENT
 INSERT INTO tb_user_role (user_id, role_id)
