@@ -1,6 +1,6 @@
 spring:
   application:
-    name: config-server
+    name: config_server
   
   config:
     import: optional:file:.env[.properties]
