@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -48,8 +49,19 @@ public class ResourceExceptionHandler {
             .path(request.getRequestURI()).build();
 
         return ResponseEntity.status(status).body(err);
-        }
+    }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<StandardError> authorizationDenied(
+        AuthorizationDeniedException e,
+        HttpServletRequest request) {
+
+        StandardError error = StandardError.builder().timestamp(Instant.now()).status(HttpStatus.FORBIDDEN.value()).error("Acesso negado").message("Você não possui permissão para realizar esta operação").path(request.getRequestURI()).build();
+
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+    
     @ExceptionHandler(ServiceIndisponivelException.class)
     public ResponseEntity<StandardError> servicoIndisponivel(
         ServiceIndisponivelException e, HttpServletRequest request) {

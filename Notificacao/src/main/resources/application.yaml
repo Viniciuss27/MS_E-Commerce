@@ -6,3 +6,4 @@ spring:
     import:
       - optional:file:.env[.properties]
       - optional:configserver:${SPRING_CLOUD_CONFIG_URI}
+  
