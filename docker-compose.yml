@@ -1,7 +1,7 @@
 services:
-
+  
   # INFRAESTRUTURA
-
+  
   postgres:
     image: postgres:16
     restart: unless-stopped
@@ -18,9 +18,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  
   # Kafka
-
+  
   kafka:
     image: apache/kafka:3.8.1
     restart: unless-stopped
@@ -50,9 +50,9 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
-
+  
   # Eureka
-
+  
   eureka:
     build:
       context: ./Eureka
@@ -65,10 +65,9 @@ services:
       - "8761:8761"
     networks:
       - ecommerce-net
-
   
   # CONFIG SERVER
-
+  
   config-server:
     build:
       context: ./Config_Server
@@ -84,9 +83,15 @@ services:
         condition: service_started
     networks:
       - ecommerce-net
-
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+  
   # Auth
-
+  
   auth:
     build:
       context: ./Auth
@@ -99,14 +104,14 @@ services:
       postgres:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
-
+  
   #Categoria
-
+  
   categoria:
     build:
       context: ./Categoria
@@ -119,14 +124,14 @@ services:
       postgres:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
-
-#Cliente
-
+  
+  #Cliente
+  
   cliente:
     build:
       context: ./Cliente
@@ -139,14 +144,14 @@ services:
       postgres:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
   
   # Produto
-
+  
   produto:
     build:
       context: ./Produto
@@ -155,21 +160,21 @@ services:
       - .env
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      KAFKA_PORT: 29092   # sobrescreve o 9092 do .env
+      KAFKA_PORT: 29092
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
   
   # Pedido
-
+  
   pedido:
     build:
       context: ./Pedido
@@ -185,14 +190,14 @@ services:
       kafka:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
   
   # Notificação
-
+  
   notificacao:
     build:
       context: ./Notificacao
@@ -208,14 +213,14 @@ services:
       kafka:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
     networks:
       - ecommerce-net
-
+  
   # GATEWAY
-
+  
   gateway:
     build:
       context: ./Gateway
@@ -224,9 +229,10 @@ services:
       - .env
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
     depends_on:
       config-server:
-        condition: service_started
+        condition: service_healthy
       eureka:
         condition: service_started
       auth:
